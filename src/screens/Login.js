@@ -139,9 +139,22 @@ const Login = ({ navigation }) => {
         identificacion: role === 'Agente de Seguridad' ? identificacion.trim() : null,
         role: role,
       });
+  
+      // Redirigir a la vista correspondiente según el rol
       setAlertMessage('Registro exitoso. Usuario registrado correctamente');
       setAlertVisible(true);
-      navigation.navigate('HomeAgente');
+      
+      if (role === 'Agente de Seguridad') {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'HomeAgente' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
     } catch (error) {
       console.log(error);
       setAlertMessage('No se pudo registrar el usuario');
@@ -150,6 +163,7 @@ const Login = ({ navigation }) => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -182,7 +196,7 @@ const Login = ({ navigation }) => {
                   <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
                     {rememberMe && <Icon name="check" size={16} color="#FFF" />}
                   </View>
-                  <Text style={styles.rememberMeText}>Recordar usuario</Text>
+                  <Text style={styles.rememberMeText}>Recordar mi usuario</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
                   <Text style={styles.forgotPasswordText}>¿Contraseña olvidada?</Text>

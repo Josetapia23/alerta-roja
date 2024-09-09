@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from 'firebase/auth';
 import { auth } from '../services/credenciales';
 import CustomAlert from '../components/CustomAlert';
+import AlertSesion from '../components/AlertSesion';
 import ConfirmationAlert from '../components/ConfirmationAlert';
 
 const SettingItem = ({ icon, label, description, backgroundColor, onPress }) => {
@@ -88,14 +89,14 @@ const Ajustes = () => {
       <View style={styles.bottomEllipse}></View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.header}>Settings</Text>
+        <Text style={styles.header}>Ajustes</Text>
         <View style={styles.profileSection}>
           <Image
             source={require('../../assets/image.png')}
             style={styles.avatar}
           />
-          <Text style={styles.name}>Lucas Scott</Text>
-          <Text style={styles.username}>@lucasscott3</Text>
+          <Text style={styles.name}>Usuario</Text>
+          <Text style={styles.username}>@Usuario</Text>
         </View>
         {groupedSettings.map((group, index) => (
           <View key={index} style={styles.groupContainer}>
@@ -125,7 +126,7 @@ const Ajustes = () => {
         message="Has cerrado sesión exitosamente."
         onClose={() => setCustomAlertVisible(false)}
       />
-      <ConfirmationAlert
+      <AlertSesion
         visible={isConfirmationAlertVisible}
         service="cerrar sesión"
         onConfirm={handleConfirmLogout}

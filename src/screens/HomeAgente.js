@@ -90,7 +90,7 @@ const HomeAgente = () => {
 
       {/* Emergency Calls */}
       <View style={styles.emergencyContainer}>
-        <Text style={styles.emergencyText}>LLamada De Emergencia</Text>
+        <Text style={styles.emergencyText}>Llamadas de Emergencias</Text>
         <View style={styles.emergencyButtons}>
           <TouchableOpacity style={styles.emergencyButton} onPress={() => handleEmergencyCall('Bomberos')}>
             <Image source={require('../../assets/imgAgentes/bomberAgentes.png')} style={styles.emergencyIcon} />
@@ -107,7 +107,7 @@ const HomeAgente = () => {
       {/* Button to navigate to MapScreen */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.mapButton} onPress={() => navigation.navigate('MapScreen')}>
-          <Text style={styles.mapButtonText}>Ver Solicitudes de Ayuda</Text>
+          <Text style={styles.mapButtonText}>Ver Solicitudes de ayuda</Text>
         </TouchableOpacity>
       </View>
 

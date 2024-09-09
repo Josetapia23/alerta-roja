@@ -2,7 +2,7 @@
   "expo": {
     "name": "ALERTA ROJA",
     "slug": "my-security-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/imgApp.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.jose23.mysecurityapp",
-      "versionCode": 2, 
+      "versionCode": 3, 
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAMvUCjzLg5-OPQrHj_ngMW_OaKSMAe5B4"

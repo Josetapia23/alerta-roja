@@ -9,7 +9,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../services/credenciales';
 import FondoAgente from '../components/FondoAgente';
 import CustomAlertAget from '../components/CustomAlertAget';
-import ConfirmationAlertAget from '../components/ConfirmationAlertAget';
+import AlertSesionAgen from '../components/AlertSesionAgen';
 
 
 const AjustesAgentes = () => {
@@ -44,12 +44,12 @@ const AjustesAgentes = () => {
 
   const settingsOptions = [
     { icon: 'chatbox-ellipses-outline', label: 'Mensajes Guardados', description: 'Ver tus mensajes guardados', backgroundColor: '#007AFF' },
-    { icon: 'call-outline', label: 'Llamadas Recientes', description: 'Revisa tu historial de llamadas', backgroundColor: '#34C759' },
+    { icon: 'call-outline', label: 'Llamadas Recientes', description: 'Revisa tu historial de llamdas', backgroundColor: '#34C759' },
     { icon: 'laptop-outline', label: 'Dispositivos', description: 'Gestiona los dispositivos conectados', backgroundColor: '#8E8E93' },
     { icon: 'notifications-outline', label: 'Notificaciones', description: 'Personaliza tus notificaciones', backgroundColor: '#FF3B30' },
     { icon: 'color-palette-outline', label: 'Apariencia', description: 'Cambia la apariencia de la app', backgroundColor: '#AF52DE' },
     { icon: 'language-outline', label: 'Idioma', description: 'Configura tu idioma preferido', backgroundColor: '#5AC8FA' },
-    { icon: 'lock-closed-outline', label: 'Privacidad y Seguridad', description: 'Gestiona la configuración de privacidad', backgroundColor: '#FF9500' },
+    { icon: 'lock-closed-outline', label: 'Privacidad y Seguridad', description: 'Gestionar la configuración de privacidad', backgroundColor: '#FF9500' },
     { icon: 'folder-outline', label: 'Almacenamiento', description: 'Revisa el uso de tu almacenamiento', backgroundColor: '#FFCC00' },
     { icon: 'exit-outline', label: 'Cerrar sesión', description: 'Salir de tu cuenta', backgroundColor: '#FF3B30', onPress: handleLogout },
   ];
@@ -79,8 +79,8 @@ const AjustesAgentes = () => {
             source={require('../../assets/image.png')}
             style={styles.avatar}
           />
-          <Text style={styles.name}>Nombre agente</Text>
-          <Text style={styles.username}>@User</Text>
+          <Text style={styles.name}>Nombres agentes</Text>
+          <Text style={styles.username}>@UserAgente</Text>
         </View>
         {groupedSettings.map((group, index) => (
           <View key={index} style={styles.groupContainer}>
@@ -110,7 +110,7 @@ const AjustesAgentes = () => {
         message="Has cerrado sesión exitosamente."
         onClose={() => setCustomAlertVisible(false)}
       />
-      <ConfirmationAlertAget
+      <AlertSesionAgen
         visible={isConfirmationAlertVisible}
         service="cerrar sesión"
         onConfirm={handleConfirmLogout}
