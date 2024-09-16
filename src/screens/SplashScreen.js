@@ -1,42 +1,16 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Image } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, StyleSheet, Animated, Image } from 'react-native';
 
-const SplashScreen = ({ navigation }) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Valor inicial para la opacidad: 0
+const SplashScreen = () => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true,
-      }
-    ).start(() => {
-      setTimeout(async () => {
-        try {
-          const auth = getAuth();
-          onAuthStateChanged(auth, async (user) => {
-            if (user) {
-              // Verificar el rol del usuario
-              const userRole = await AsyncStorage.getItem('role');
-              if (userRole === 'Agente de Seguridad') {
-                navigation.replace('HomeAgente');
-              } else {
-                navigation.replace('Home');
-              }
-            } else {
-              navigation.replace('Login');
-            }
-          });
-        } catch (error) {
-          console.error('Error during auth state change:', error);
-        }
-      }, 1000);
-    });
-  }, [fadeAnim, navigation]);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
     <View style={styles.container}>
@@ -89,12 +63,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 210,
     height: 210,
-  },
-  logoText: {
-    marginTop: 15,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF',
   },
 });
 

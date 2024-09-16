@@ -9,9 +9,10 @@ import HeaderComLog from '../components/HaderComLog';
 import TabSwitcher from '../components/TabSwitcher';
 import InputField from '../components/InputField';
 import RoleSelector from '../components/RoleSelector';
-import SocialButtons from '../components/SocialButtons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomAlert from '../components/CustomAlert';
+import { sendPasswordResetEmail } from 'firebase/auth';
+
 
 
 const Login = ({ navigation }) => {
@@ -29,6 +30,9 @@ const Login = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (isLogin) {
@@ -107,6 +111,25 @@ const Login = ({ navigation }) => {
       setAlertVisible(true);
       return;
     }
+    // Validación de número de teléfono colombiano (debe ser de 10 dígitos)
+    if (telefono.trim().length !== 10 || isNaN(telefono)) {
+      setAlertMessage('El número de teléfono debe tener 10 dígitos');
+      setAlertVisible(true);
+      return;
+    }
+    // Validación de formato de correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setAlertMessage('El correo no es válido');
+      setAlertVisible(true);
+      return;
+    }
+    // Validación de longitud mínima de la contraseña
+    if (password.length < 6) {
+      setAlertMessage('La contraseña debe tener al menos 6 caracteres');
+      setAlertVisible(true);
+      return;
+    }
     if (password !== confirmPassword) {
       setAlertMessage('Las contraseñas no coinciden');
       setAlertVisible(true);
@@ -139,11 +162,11 @@ const Login = ({ navigation }) => {
         identificacion: role === 'Agente de Seguridad' ? identificacion.trim() : null,
         role: role,
       });
-  
+
       // Redirigir a la vista correspondiente según el rol
       setAlertMessage('Registro exitoso. Usuario registrado correctamente');
       setAlertVisible(true);
-      
+
       if (role === 'Agente de Seguridad') {
         navigation.reset({
           index: 0,
@@ -163,7 +186,26 @@ const Login = ({ navigation }) => {
       setIsLoading(false);
     }
   };
-  
+
+  const handlePasswordReset = async () => {
+    if (!resetEmail.trim()) {
+      setAlertMessage('Por favor ingresa tu correo electrónico');
+      setAlertVisible(true);
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, resetEmail.trim());
+      setAlertMessage('Correo de restablecimiento enviado. Revisa tu bandeja de entrada.');
+      setAlertVisible(true);
+      setShowResetPassword(false);
+    } catch (error) {
+      setAlertMessage('Hubo un error al enviar el correo de restablecimiento');
+      setAlertVisible(true);
+      console.log(error);
+    }
+  };
+
 
   return (
     <View style={styles.container}>
@@ -198,17 +240,18 @@ const Login = ({ navigation }) => {
                   </View>
                   <Text style={styles.rememberMeText}>Recordar mi usuario</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowResetPassword(true)}>
                   <Text style={styles.forgotPasswordText}>¿Contraseña olvidada?</Text>
                 </TouchableOpacity>
+
               </View>
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
               <Button mode="contained" onPress={handleLogin} style={styles.loginButton} disabled={isLoading}>
                 {isLoading ? <ActivityIndicator color="#FFF" /> : 'Ingresar'}
               </Button>
-              
+
             </>
-            
+
           ) : (
             <>
               {!role ? (
@@ -231,9 +274,17 @@ const Login = ({ navigation }) => {
                     icon="phone"
                     placeholder="Telefono"
                     value={telefono}
-                    onChangeText={setTelefono}
-                    keyboardType="phone-pad"
+                    onChangeText={(text) => {
+                      // Asegura que el valor solo contenga números y tenga un máximo de 10 caracteres
+                      const formattedText = text.replace(/[^0-9]/g, '');
+                      if (formattedText.length <= 10) {
+                        setTelefono(formattedText); // Actualiza el estado solo si el número es de 10 dígitos o menos
+                      }
+                    }}
+                    keyboardType="numeric" // Define el teclado numérico
+                    maxLength={10} // Limita el máximo a 10 caracteres
                   />
+
                   <InputField
                     icon="envelope"
                     placeholder="Correo"
@@ -272,6 +323,27 @@ const Login = ({ navigation }) => {
             </>
           )}
         </ScrollView>
+        {showResetPassword && (
+          <CustomAlert
+            visible={showResetPassword}
+            title="Recuperar Contraseña"
+            message="Ingresa tu correo para recibir un enlace de restablecimiento de contraseña."
+            onClose={() => setShowResetPassword(false)}
+            showOkButton={false} // Oculta el botón OK
+            showCloseButton={true} // Muestra el botón de cerrar (X)
+          >
+            <TextInput
+              style={styles.input}
+              placeholder="Correo electrónico"
+              value={resetEmail}
+              onChangeText={setResetEmail}
+              keyboardType="email-address"
+            />
+            <Button mode="contained" onPress={handlePasswordReset} style={styles.resetButton}>
+              Enviar correo
+            </Button>
+          </CustomAlert>
+        )}
       </View>
       <CustomAlert
         visible={alertVisible}
@@ -345,6 +417,18 @@ const styles = StyleSheet.create({
   orText: {
     textAlign: 'center',
     marginVertical: 16,
+  },
+  resetButton: {
+    marginTop: 10,
+    backgroundColor: '#EB2525',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
 });
 

@@ -47,13 +47,22 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Navigator initialRouteName="Login">
+        {/* Si el usuario está autenticado y tiene un rol, redirige según el rol */}
+        {user ? (
+          user.role === 'Agente de Seguridad' ? (
+            <Stack.Screen name="HomeAgente" component={HomeAgente} options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+          )
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          </>
+        )}
         <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Ajustes" component={Ajustes} options={{ headerShown: false }} />
-        <Stack.Screen name="HomeAgente" component={HomeAgente} options={{ headerShown: false }} />
         <Stack.Screen name="AjustesAgentes" component={AjustesAgentes} options={{ headerShown: false }} />
         <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
       </Stack.Navigator>

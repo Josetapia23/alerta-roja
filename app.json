@@ -2,7 +2,7 @@
   "expo": {
     "name": "ALERTA ROJA",
     "slug": "my-security-app",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/imgApp.png",
     "userInterfaceStyle": "light",
@@ -13,7 +13,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/imgApp.png"
+      "icon": "./assets/imgApp.png",
+      "bundleIdentifier": "com.jose23.mysecurityapp"
     },
     "android": {
       "permissions": [
@@ -30,7 +31,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.jose23.mysecurityapp",
-      "versionCode": 3, 
+      "versionCode": 5,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAMvUCjzLg5-OPQrHj_ngMW_OaKSMAe5B4"
