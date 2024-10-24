@@ -1,0 +1,9 @@
+# Ignorar el archivo .env
+.env
+
+# Ignorar las carpetas de Android e iOS
+android/
+ios/
+
+# Ignorar node_modules por si acaso no está agregado
+node_modules/
