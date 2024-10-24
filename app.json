@@ -8,13 +8,20 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
       "icon": "./assets/imgApp.png",
-      "bundleIdentifier": "com.jose23.mysecurityapp"
+      "bundleIdentifier": "com.jose23.mysecurityapp",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio", "fetch"],
+        "NSUserTrackingUsageDescription": "Se utiliza para mostrar notificaciones personalizadas.",
+        "EXNotifications": {
+          "sounds": ["alarm.mp3"] 
+        }
+      }
     },
     "android": {
       "permissions": [
@@ -27,7 +34,7 @@
         "WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/imgApp.png",
+        "foregroundImage": "./assets/imgAppAdat.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.jose23.mysecurityapp",
@@ -36,6 +43,11 @@
         "googleMaps": {
           "apiKey": "AIzaSyAMvUCjzLg5-OPQrHj_ngMW_OaKSMAe5B4"
         }
+      },
+      "notification": {
+        "icon": "./assets/imgApp.png",
+        "color": "#FF231F7C",
+        "sound": "./assets/sounds/alarm.mp3" 
       }
     },
     "web": {
@@ -58,6 +70,9 @@
       "eas": {
         "projectId": "6cc0e714-ecf1-4856-9ce4-3c60eebd8fe3"
       }
-    }
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

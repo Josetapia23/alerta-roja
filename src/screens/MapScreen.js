@@ -7,6 +7,9 @@ import Solicitud from '../components/Solicitud';
 import * as Location from 'expo-location';
 import { Swipeable } from 'react-native-gesture-handler';
 import AtenderSoli from '../components/AtenderSoli'; // Importamos la alerta personalizada
+import BackButton from '../components/BackButton';
+import { useNavigation } from '@react-navigation/native'; 
+
 
 const MapScreen = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -15,7 +18,7 @@ const MapScreen = () => {
   const [solicitudSeleccionada, setSolicitudSeleccionada] = useState(null);
   const mapRef = useRef(null);
   const swipeableRef = useRef(null); // Referencia para cerrar Swipeable
-
+  const navigation = useNavigation();
   useEffect(() => {
     const requestLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -119,6 +122,7 @@ const MapScreen = () => {
 
   return (
     <View style={styles.container}>
+      
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -160,6 +164,7 @@ const MapScreen = () => {
         onConfirm={() => handleAtenderSolicitud(solicitudSeleccionada)}
         onCancel={onCancelAtender}
       />
+      <BackButton onPress={() => navigation.goBack()} />
     </View>
   );
 };

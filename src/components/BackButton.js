@@ -11,8 +11,14 @@ const BackButton = ({ onPress }) => (
 
 const styles = StyleSheet.create({
   backButton: {
-    marginBottom: 24,
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 10,
+    borderRadius: 20,
   },
 });
+
 
 export default BackButton;

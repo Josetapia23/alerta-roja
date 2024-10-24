@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth, firestore } from '../services/credenciales';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'; // Import correct methods
 import BottomNavigation from '../components/BottomNavigation';
 import Header from '../components/Header';
 import { getCurrentLocation, requestLocationPermission } from '../services/location'; // Modificamos la función de ubicación
 import CustomAlert from '../components/CustomAlert';
 import ConfirmationAlert from '../components/ConfirmationAlert';
+import PanicButton from '../components/PanicButton';
+import axios from 'axios';
+import { auth, firestore } from '../services/credenciales';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -53,33 +55,99 @@ const Home = () => {
     return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
   }, [solicitudId]);
 
+  // Función para obtener los tokens de los agentes de seguridad
+  const fetchSecurityAgentTokens = async () => {
+    try {
+      const agentsRef = collection(firestore, 'users'); // Cambia esto
+      const q = query(agentsRef, where('role', '==', 'Agente de Seguridad'));
+      const querySnapshot = await getDocs(q);
+  
+      const tokens = [];
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        console.log('Usuario:', userData);  // Verifica los datos de cada usuario
+        if (userData.fcmToken) {  
+          tokens.push(userData.fcmToken);  
+        }
+      });
+  
+      console.log('Tokens obtenidos:', tokens);  // Verifica que los tokens estén siendo obtenidos
+      return tokens;
+    } catch (error) {
+      console.error('Error al obtener los tokens:', error);
+      return [];
+    }
+  };
+  
+  
+
+  const testFirestoreConnection = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(firestore, 'users'));
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, ' => ', doc.data());
+      });
+    } catch (error) {
+      console.error('Error al conectar con Firestore:', error);
+    }
+  };
+  
+  useEffect(() => {
+    testFirestoreConnection();
+  }, []);
+  
   const handlePanicButtonPress = async () => {
     try {
-      // Verificar si se tienen los permisos de ubicación
       const hasPermission = await requestLocationPermission();
       if (!hasPermission) {
         setAlertMessage('No se pudieron obtener los permisos de ubicación. Activa la ubicación y vuelve a intentarlo.');
         setAlertVisible(true);
         return;
       }
-
-      // Obtener la ubicación actual
+  
       const location = await getCurrentLocation();
       
       if (location && location.latitude && location.longitude) {
-        // Crear una nueva solicitud de ayuda en Firestore
         const user = auth.currentUser;
-        const newSolicitudRef = doc(firestore, 'locations', user.uid); // Asignamos la solicitud al UID del usuario
+        const newSolicitudRef = doc(firestore, 'locations', user.uid);
         await setDoc(newSolicitudRef, {
           userId: user.uid,
           latitude: location.latitude,
           longitude: location.longitude,
-          status: 'pendiente', // Estado inicial "pendiente"
+          status: 'pendiente',
           timestamp: new Date(),
         });
-        setSolicitudId(user.uid); // Almacenar la ID de la solicitud
-        setAlertMessage('Solicitaste ayuda. Tu ubicación ha sido enviada a las autoridades.');
-        setAlertVisible(true);
+        setSolicitudId(user.uid);
+  
+        // Obtenemos los tokens de los agentes de seguridad
+        const tokens = await fetchSecurityAgentTokens();
+        
+        if (tokens.length === 0) {
+          console.error('No se encontraron tokens de agentes de seguridad.');
+          setAlertMessage('No se pudo enviar la alerta. No hay agentes de seguridad disponibles.');
+          setAlertVisible(true);
+          return;
+        }
+  
+        // Preparar los datos para el backend
+        const requestBody = {
+          title: 'Solicitud de Ayuda',
+          body: 'Un ciudadano ha solicitado ayuda.',
+          tokens: tokens, // Pasamos los tokens obtenidos
+        };
+  
+        console.log('Request body being sent:', requestBody); // Depurar la solicitud
+  
+        // Enviar solicitud al backend
+        try {
+          await axios.post('http://10.1.81.70:3000/send-help-alert', requestBody);
+          setAlertMessage('Solicitaste ayuda. Tu ubicación ha sido enviada a las autoridades.');
+          setAlertVisible(true);
+        } catch (error) {
+          console.error('Error al enviar la solicitud al backend:', error.response ? error.response.data : error.message);
+          setAlertMessage('Se produjo un error al enviar la solicitud.');
+          setAlertVisible(true);
+        }
       } else {
         setAlertMessage('No se pudo obtener la ubicación. Inténtalo de nuevo.');
         setAlertVisible(true);
@@ -90,6 +158,7 @@ const Home = () => {
       setAlertVisible(true);
     }
   };
+  
 
   const handleEmergencyCall = (service) => {
     setConfirmService(service);
@@ -137,10 +206,8 @@ const Home = () => {
       <Image source={require('../../assets/fondoLogin.png')} style={styles.backImage} />
       <View style={styles.bottomEllipse}></View>
       <Header title="Bienvenido," userName={userName} />
-      <View style={styles.conteneAlert}>
-        <TouchableOpacity style={styles.panicButton} onPress={handlePanicButtonPress}>
-          <Image source={require('../../assets/botnPanico.png')} style={styles.panicIcon} />
-        </TouchableOpacity>
+       <View style={styles.conteneAlert}>
+        <PanicButton onPress={handlePanicButtonPress} size={250} />
       </View>
       {solicitudId && (
         <TouchableOpacity style={styles.attendedButton} onPress={handleMarkAsAttended}>
@@ -203,14 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     display: 'flex',
     justifyContent: 'center',
-  },
-  panicButton: {
     marginTop: '10%',
-    alignItems: 'center',
-  },
-  panicIcon: {
-    width: 295,
-    height: 300,
   },
   emergencyContainer: {
     marginTop: 25,

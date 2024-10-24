@@ -11,9 +11,6 @@ const RoleSelector = ({ role, setRole, handleContinue }) => (
     <TouchableOpacity style={styles.roleButton} onPress={() => setRole('Ciudadano')}>
       <Text style={styles.roleText}>Ciudadano</Text>
     </TouchableOpacity>
-    <Button mode="contained" onPress={handleContinue} style={styles.continueButton}>
-      Continue
-    </Button>
   </View>
 );
 
